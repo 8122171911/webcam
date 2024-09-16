@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Start Page</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+        <style type="text/css">
+        	body {
+			  font:
+			    14px "Open Sans",
+			    "Arial",
+			    sans-serif;
+			}
+			
+			video {
+			  margin-top: 2px;
+			  border: 1px solid black;
+			}
+			
+			.button {
+			  cursor: pointer;
+			  display: block;
+			  width: 160px;
+			  border: 1px solid black;
+			  font-size: 16px;
+			  text-align: center;
+			  padding-top: 2px;
+			  padding-bottom: 4px;
+			  color: white;
+			  background-color: darkgreen;
+			  text-decoration: none;
+			}
+			
+			h2 {
+			  margin-bottom: 4px;
+			}
+			
+			.left {
+			  margin-right: 10px;
+			  float: left;
+			  width: 160px;
+			  padding: 0px;
+			}
+			
+			.right {
+			  margin-left: 10px;
+			  float: left;
+			  width: 160px;
+			  padding: 0px;
+			}
+			
+			.bottom {
+			  clear: both;
+			  padding-top: 10px;
+			}
+        	
+        </style>
+        
+        
+    </head>
+    <body>
+        <h1>Hello World!</h1>
+        
+		<div class="left">
+		  <div id="startButton" class="button">Start Recording</div>
+		  <h2>Preview</h2>
+		  <video id="preview" width="160" height="120" autoplay muted></video>
+		</div>
+		
+	        
+    </body>
+    <script type="text/javascript">
+    
+    		function post(payload, url){
+    			let xhr=new XMLHttpRequest();
+    			xhr.addEventListener('load', function(e){
+    				if(e.target.status==200){
+    					console.log('success')
+    				}
+    			});
+    			xhr.open('POST', url);
+    			xhr.send(payload);
+    		}
+    
+        	let startButton=document.getElementById('startButton');
+        	let preview=document.getElementById('preview');
+        	let recordingTimeMS = 5000;
+        	
+        	function startRecording(stream, lengthinms){ 
+        		let recorder=new MediaRecorder(stream, {mimeType: 'video/mp4; codecs=\"avc1.424028, mp4a.40.2\"'});
+        		console.log(recorder.mimeType);
+        		recorder.start(100); 
+        		let data=[];
+        		recorder.ondataavailable = (event) => {
+        			event.data.arrayBuffer().then((data)=>{post(data,'/app/videoreceiver')});
+        		}
+        		
+        		
+        		
+        	}
+        	 
+        	startButton.addEventListener('click', ()=>{
+        		navigator.mediaDevices.getUserMedia({video:true,audio:true}).then((stream)=>{
+        			preview.srcObject=stream;
+        			preview.captureStream =
+        		          preview.captureStream || preview.mozCaptureStream;
+        			return new Promise((resolve)=>{preview.onplaying=resolve})
+        		}).then(()=>startRecording(preview.captureStream(), recordingTimeMS))
+        	})
+        
+        </script>
+</html>

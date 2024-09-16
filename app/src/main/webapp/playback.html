@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>PLayback Stream</title>
+</head>
+<body>
+<video id="preview" width="250"  controls="controls" >
+	<source src="http://localhost:8080/app/videotransmit" type="video/mp4">
+</video>
+<button id="play">Play</button>
+<script type="text/javascript">
+	let b=document.getElementById('play');
+	b.addEventListener('click', function(){
+		document.getElementById('preview').play();
+	});
+		
+    	
+
+</script> 
+</body>
+</html>
